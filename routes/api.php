@@ -55,3 +55,31 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
         Route::match(['post', 'put'], '/sync_user_abilities/{id}', 'RolesController@syncAbilities');
     
     });
+
+    /** Routes pour le Module de gestion de produit */
+
+    /*Client*/
+    Route::group(['prefix' => 'clients'], function () {
+        Route::get('/', 'ClientController@index');
+        Route::post('/', 'ClientController@store');
+        Route::get('/{id}', 'ClientController@show');
+        Route::match(['post', 'put'],'/{id}', 'ClientController@update');
+        Route::delete('/{id}', 'ClientController@destroy');
+
+    });
+
+    /* Produit */
+    Route::group(['prefix' => 'produits'], function () {
+        Route::get('/', 'ProduitController@index');
+        Route::post('/', 'ProduitController@store');
+        Route::get('/{id}', 'ProduitController@show');
+        Route::match(['post', 'put'],'/{id}', 'ProduitController@update');
+        Route::delete('/{id}', 'ProduitController@destroy');
+
+    });
+
+    Route::group(['prefix' => 'commandes'], function () {
+        Route::get('/{id}', 'CommandeController@getProductByClient');
+        Route::get('/', 'CommandeController@getClientBuy');
+
+    });

@@ -15,10 +15,9 @@ class CreateProduitsTable extends Migration
     {
         Schema::create('produits', function (Blueprint $table) {
             $table->increments("id");
-            $table->string('name');
-            $table->string('email')->unique();
-            //$table->string('password');
-            $table->string('avatar');
+            $table->string('libelle');
+            $table->double('prix_u');
+            
             $table->timestamps();
         });
     }

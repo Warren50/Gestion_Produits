@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Produit;
+use App\APIError;
 use Illuminate\Http\Request;
+
 
 class ProduitController extends Controller
 {
@@ -12,19 +14,10 @@ class ProduitController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $req)
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        $produits = Produit::simplePaginate($req->has('limit') ? $req->limit : 15);
+        return response()->json($produits);
     }
 
     /**
@@ -35,7 +28,12 @@ class ProduitController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $produit = new Produit();
+        $produit->libelle = $request->libelle;
+        $produit->prix_u = $request->prix_u;
+
+        $produit->save();
+        return response()->json($produit);
     }
 
     /**
@@ -44,22 +42,19 @@ class ProduitController extends Controller
      * @param  \App\Produit  $produit
      * @return \Illuminate\Http\Response
      */
-    public function show(Produit $produit)
+    public function show($id)
     {
-        //
-    }
+        $produit = Produit::find($id);
+        if($produit==null){
+            $notFound = new APIError;
+            $notFound->setStatus("404");
+            $notFound->setCode("PRODUIT_NOT_FOUND");
+            $notFound->setMessage("Ce PRODUIT n'existe pas!");
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Produit  $produit
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Produit $produit)
-    {
-        //
+            return response()->json($notFound, 404);
+        }
+        return response()->json($produit);
     }
-
     /**
      * Update the specified resource in storage.
      *
@@ -67,9 +62,23 @@ class ProduitController extends Controller
      * @param  \App\Produit  $produit
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Produit $produit)
+    public function update(Request $request, $id)
     {
-        //
+        $produit = Produit::find($id);
+        if($produit==null){
+            $notFound = new APIError;
+            $notFound->setStatus("404");
+            $notFound->setCode("PRODUIT_NOT_FOUND");
+            $notFound->setMessage("Ce PRODUIT n'existe pas!");
+
+            return response()->json($notFound, 404);
+        }
+        $produit->libelle = $request->libelle;
+        $produit->prix_u = $request->prix_u;
+        $produit->update();
+
+        return response()->json($produit);
+
     }
 
     /**
@@ -80,6 +89,16 @@ class ProduitController extends Controller
      */
     public function destroy(Produit $produit)
     {
-        //
+        $produit = Produit::find($id);
+        if($produit==null){
+            $notFound = new APIError;
+            $notFound->setStatus("404");
+            $notFound->setCode("PRODUIT_NOT_FOUND");
+            $notFound->setMessage("Ce PRODUIT n'existe pas!");
+
+            return response()->json($notFound, 404);
+        }
+        $produit->delete();
+        return response()->json(null);
     }
 }
