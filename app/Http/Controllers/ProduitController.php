@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Produit;
 use App\APIError;
 use Illuminate\Http\Request;
-
+use Validator;
 
 class ProduitController extends Controller
 {
@@ -28,6 +28,18 @@ class ProduitController extends Controller
      */
     public function store(Request $request)
     {
+        $valid = Validator::make($request->all(),[
+            'libelle' => 'required |min:3 ',
+            'prix_u' => 'required|numeric|min:100|not_in:0'
+        ]);
+
+        if($valid->fails())
+        {
+            return response()->json(
+                ['error'=>$valid->errors()],
+                401
+            );
+        }
         $produit = new Produit();
         $produit->libelle = $request->libelle;
         $produit->prix_u = $request->prix_u;

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Client;
 use Illuminate\Http\Request;
 use App\APIError;
+use Validator;
 
 class ClientController extends Controller
 {
@@ -27,6 +28,18 @@ class ClientController extends Controller
      */
     public function store(Request $request)
     {
+        $valid = Validator::make($request->all(),[
+            'name' => 'required',
+            'email' => 'required'
+        ]);
+
+        if($valid->fails())
+        {
+            return response()->json(
+                ['error'=>$valid->errors()],
+                401
+            );
+        }
         $client = new Client();
         $client->name = $request->name;
         $client->email = $request->email;
